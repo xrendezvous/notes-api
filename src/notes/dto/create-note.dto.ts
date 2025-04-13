@@ -1,11 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-
-export class CreateNoteDto {
-  @IsString()
-  @IsNotEmpty()
+export interface ICreateNoteDto {
   title: string;
-
-  @IsString()
-  @IsOptional()
   content?: string;
 }
+
+export class CreateNoteDto implements ICreateNoteDto {
+  title: string;
+  content?: string;
+}
+

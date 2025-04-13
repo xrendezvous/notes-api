@@ -1,11 +1,9 @@
-import { IsOptional, IsString } from 'class-validator';
-
-export class UpdateNoteDto {
-  @IsString()
-  @IsOptional()
+export interface IUpdateNoteDto {
   title?: string;
+  content?: string;
+}
 
-  @IsString()
-  @IsOptional()
+export class UpdateNoteDto implements IUpdateNoteDto {
+  title?: string;
   content?: string;
 }
