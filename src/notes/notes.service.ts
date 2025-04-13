@@ -1,44 +1,43 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { v4 as uuidv4 } from 'uuid';
+import { NoteDto } from './dto/note.dto';
 
 @Injectable()
 export class NotesService {
-  private notes: Note[] = [];
+  constructor(
+    @InjectRepository(Note)
+    private noteRepo: Repository<Note>,
+  ) {}
 
-  create(createNoteDto: CreateNoteDto): Note {
-    const note: Note = {
-      id: uuidv4(),
-      title: createNoteDto.title,
-      content: createNoteDto.content || '',
-    };
-    this.notes.push(note);
-    return note;
+  async createNote(createDto: CreateNoteDto): Promise<Note> {
+    const note = this.noteRepo.create(createDto);
+    return this.noteRepo.save(note);
   }
 
-  findAll(): { items: Note[] } {
-    return { items: this.notes };
+  async getAllNotes(): Promise<{ items: Note[] }> {
+    const items = await this.noteRepo.find();
+    return { items };
   }
 
-  findOne(id: string): Note {
-    const note = this.notes.find((n) => n.id === id);
+  async findNote(id: string): Promise<Note> {
+    const note = await this.noteRepo.findOneBy({ id });
     if (!note) throw new NotFoundException('Note not found');
-    return note;
+    return new NoteDto(note);
   }
 
-  update(id: string, updateDto: UpdateNoteDto): Note {
-    const note = this.findOne(id);
-    note.title = updateDto.title ?? note.title;
-    note.content = updateDto.content ?? note.content;
-    return note;
+  async updateNote(id: string, updateDto: UpdateNoteDto): Promise<Note> {
+    const note = await this.findNote(id);
+    const updated = this.noteRepo.merge(note, updateDto);
+    return this.noteRepo.save(updated);
   }
 
-  remove(id: string): { success: boolean } {
-    const index = this.notes.findIndex((n) => n.id === id);
-    if (index === -1) throw new NotFoundException('Note not found');
-    this.notes.splice(index, 1);
+  async removeNote(id: string): Promise<{ success: boolean }> {
+    const res = await this.noteRepo.delete(id);
+    if (res.affected === 0) throw new NotFoundException('Note not found');
     return { success: true };
   }
 }

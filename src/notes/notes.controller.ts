@@ -17,21 +17,21 @@ export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto): NoteDto {
-    const note = this.notesService.create(createNoteDto);
+  async create(@Body() createNoteDto: CreateNoteDto): Promise<NoteDto> {
+    const note = await this.notesService.createNote(createNoteDto);
     return new NoteDto(note);
   }
 
   @Get()
-  findAll(): NoteListDto {
-    const result = this.notesService.findAll();
+  async findAll(): Promise<NoteListDto> {
+    const result = await this.notesService.getAllNotes();
     const dtoItems = result.items.map((n) => new NoteDto(n));
     return new NoteListDto(dtoItems);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<NoteDto> {
-    const note = await this.notesService.findOne(id);
+    const note = await this.notesService.findNote(id);
     return new NoteDto(note);
   }
 
@@ -40,12 +40,12 @@ export class NotesController {
     @Param('id') id: string,
     @Body() updateNoteDto: UpdateNoteDto,
   ): Promise<NoteDto> {
-    const note = await this.notesService.update(id, updateNoteDto);
+    const note = await this.notesService.updateNote(id, updateNoteDto);
     return new NoteDto(note);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): { success: boolean } {
-    return this.notesService.remove(id);
+  async remove(@Param('id') id: string): Promise<{ success: boolean }> {
+    return await this.notesService.removeNote(id);
   }
 }
