@@ -25,4 +25,3 @@ export class NoteListDto implements INoteListDto {
     this.items = items;
   }
 }
-

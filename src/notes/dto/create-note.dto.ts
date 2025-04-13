@@ -7,4 +7,3 @@ export class CreateNoteDto implements ICreateNoteDto {
   title: string;
   content?: string;
 }
-

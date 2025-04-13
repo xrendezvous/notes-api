@@ -23,7 +23,7 @@ export class NotesService {
   }
 
   findOne(id: string): Note {
-    const note = this.notes.find(n => n.id === id);
+    const note = this.notes.find((n) => n.id === id);
     if (!note) throw new NotFoundException('Note not found');
     return note;
   }
@@ -36,7 +36,7 @@ export class NotesService {
   }
 
   remove(id: string): { success: boolean } {
-    const index = this.notes.findIndex(n => n.id === id);
+    const index = this.notes.findIndex((n) => n.id === id);
     if (index === -1) throw new NotFoundException('Note not found');
     this.notes.splice(index, 1);
     return { success: true };
