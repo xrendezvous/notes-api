@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { NoteDto } from './dto/note.dto';
 
 @Injectable()
 export class NotesService {
@@ -26,7 +25,7 @@ export class NotesService {
   async findNote(id: string): Promise<Note> {
     const note = await this.noteRepo.findOneBy({ id });
     if (!note) throw new NotFoundException('Note not found');
-    return new NoteDto(note);
+    return note;
   }
 
   async updateNote(id: string, updateDto: UpdateNoteDto): Promise<Note> {
