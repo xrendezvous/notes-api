@@ -1,9 +1,16 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 export interface IUpdateNoteDto {
-  title?: string;
+  title: string;
   content?: string;
 }
 
 export class UpdateNoteDto implements IUpdateNoteDto {
-  title?: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsOptional()
   content?: string;
 }
