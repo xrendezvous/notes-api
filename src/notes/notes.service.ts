@@ -34,9 +34,9 @@ export class NotesService {
     return this.noteRepo.save(updated);
   }
 
-  async removeNote(id: string): Promise<{ success: boolean }> {
+  async removeNote(id: string): Promise<boolean> {
     const res = await this.noteRepo.delete(id);
     if (res.affected === 0) throw new NotFoundException('Note not found');
-    return { success: true };
+    return true;
   }
 }

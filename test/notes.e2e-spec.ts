@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotesModule } from '../src/notes/notes.module';
 import { Note } from '../src/notes/entities/note.entity';
@@ -27,9 +27,7 @@ describe('NotesController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-    );
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
     await app.init();
   });
 
@@ -58,9 +56,7 @@ describe('NotesController (e2e)', () => {
   });
 
   it('GET /notes/:id - отримання однієї нотатки', async () => {
-    const res = await request(app.getHttpServer())
-      .get(`/notes/${createdId}`)
-      .expect(200);
+    const res = await request(app.getHttpServer()).get(`/notes/${createdId}`).expect(200);
 
     expect(res.body).toHaveProperty('id', createdId);
     expect(res.body).toHaveProperty('title');
@@ -80,9 +76,7 @@ describe('NotesController (e2e)', () => {
   });
 
   it('DELETE /notes/:id - видалення нотатки', async () => {
-    const res = await request(app.getHttpServer())
-      .delete(`/notes/${createdId}`)
-      .expect(200);
+    const res = await request(app.getHttpServer()).delete(`/notes/${createdId}`).expect(200);
 
     expect(res.body).toEqual({ success: true });
   });

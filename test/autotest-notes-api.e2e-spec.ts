@@ -9,6 +9,8 @@ describe('External Notes API (e2e)', () => {
   let createdNoteId: string;
   let secondNoteId: string;
 
+  const fakeId = '00000000-0000-0000-0000-000000000000';
+
   it('POST /notes - create note', async () => {
     const response = await request(baseUrl)
       .post('/notes')
@@ -34,23 +36,17 @@ describe('External Notes API (e2e)', () => {
   });
 
   it('GET /notes - retrieve list of notes (check count)', async () => {
-    const response = await request(baseUrl)
-      .get('/notes')
-      .expect(200);
+    const response = await request(baseUrl).get('/notes').expect(200);
 
     expect(Array.isArray(response.body.items)).toBeTruthy();
     expect(response.body.items.length).toBeGreaterThanOrEqual(2);
     expect(response.body.items[0]).toHaveProperty('title');
     const titles = response.body.items.map((note: { title: unknown }) => note.title);
-    expect(titles).toEqual(
-      expect.arrayContaining([expect.stringContaining(uniqueTestValue)])
-    );
+    expect(titles).toEqual(expect.arrayContaining([expect.stringContaining(uniqueTestValue)]));
   });
 
   it('GET /notes/:id - retrieve specific note', async () => {
-    const response = await request(baseUrl)
-      .get(`/notes/${createdNoteId}`)
-      .expect(200);
+    const response = await request(baseUrl).get(`/notes/${createdNoteId}`).expect(200);
 
     expect(response.body.id).toBe(createdNoteId);
     expect(response.body.title).toContain(`Note ${uniqueTestValue}`);
@@ -68,32 +64,25 @@ describe('External Notes API (e2e)', () => {
     expect(response.body.content).toContain(`Content ${uniqueTestValue}`);
   });
 
-  it('PUT /notes/:id - error 404 when updating nonexistent note', async () => {
-    await request(baseUrl)
-      .put('/notes/nonexistent-id')
-      .send({ title: 'Should fail' })
-      .expect(404);
-  });
+  describe('Error 404 when operating on nonexistent note', () => {
+    it('PUT /notes/:id - should return 404', async () => {
+      await request(baseUrl).put(`/notes/${fakeId}`).send({ title: 'Should fail' }).expect(404);
+    });
 
-  it('GET /notes/:id - error 404 when retrieving nonexistent note', async () => {
-    await request(baseUrl)
-      .get('/notes/nonexistent-id')
-      .expect(404);
+    it('GET /notes/:id - should return 404', async () => {
+      await request(baseUrl).get(`/notes/${fakeId}`).expect(404);
+    });
+
+    it('DELETE /notes/:id - should return 404', async () => {
+      await request(baseUrl).delete(`/notes/${fakeId}`).expect(404);
+    });
   });
 
   it('DELETE /notes/:id - delete note', async () => {
-    const response = await request(baseUrl)
-      .delete(`/notes/${createdNoteId}`)
-      .expect(200);
+    const response = await request(baseUrl).delete(`/notes/${createdNoteId}`).expect(200);
 
-    expect(response.body.success).toBe(true);
+    expect(response.body).toEqual({ success: true });
 
     await request(baseUrl).get(`/notes/${createdNoteId}`).expect(404);
-  });
-
-  it('DELETE /notes/:id - error 404 when deleting nonexistent note', async () => {
-    await request(baseUrl)
-      .delete('/notes/nonexistent-id')
-      .expect(404);
   });
 });
