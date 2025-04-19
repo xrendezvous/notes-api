@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Note } from './entities/note.entity';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class NotesService {
@@ -23,6 +24,9 @@ export class NotesService {
   }
 
   async findNote(id: string): Promise<Note> {
+    if (!isUUID(id)) {
+      throw new NotFoundException('Invalid UUID');
+    }
     const note = await this.noteRepo.findOneBy({ id });
     if (!note) throw new NotFoundException('Note not found');
     return note;
@@ -35,6 +39,9 @@ export class NotesService {
   }
 
   async removeNote(id: string): Promise<boolean> {
+    if (!isUUID(id)) {
+      throw new NotFoundException('Invalid UUID');
+    }
     const res = await this.noteRepo.delete(id);
     if (res.affected === 0) throw new NotFoundException('Note not found');
     return true;
