@@ -12,16 +12,26 @@ describe('NotesController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'xrendezvous',
-          password: 'Xzvv9843',
-          database: 'notes-editor-db',
-          entities: [Note],
-          synchronize: true,
-        }),
+        TypeOrmModule.forRoot(
+          process.env.GITHUB_ACTIONS === 'true'
+            ? {
+                type: 'sqlite',
+                database: ':memory:',
+                dropSchema: true,
+                entities: [Note],
+                synchronize: true,
+              }
+            : {
+                type: 'postgres',
+                host: 'localhost',
+                port: 5432,
+                username: 'xrendezvous',
+                password: 'Xzvv9843',
+                database: 'notes-editor-db',
+                entities: [Note],
+                synchronize: true,
+              },
+        ),
         NotesModule,
       ],
     }).compile();
